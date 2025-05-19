@@ -7,3 +7,5 @@
 *Karma
 *Mini Game
 
+> [!Notes]
+> This Bot is still under development.
