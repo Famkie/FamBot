@@ -9,7 +9,6 @@ module.exports = {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    // Cek apakah command ada langsung, atau sebagai alias
     const actualCommandName = client.commands.has(commandName)
       ? commandName
       : client.aliases.get(commandName);
