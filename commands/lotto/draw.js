@@ -1,4 +1,3 @@
-// commands/lotto/draw.js 
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js'); const lottoStore = require('../../utils/lottoStore');
 
 module.exports = { data: new SlashCommandBuilder() .setName('draw') .setDescription('Draw the winner(s) of the current lotto'),
