@@ -5,7 +5,6 @@ module.exports = {
   name: 'interactionCreate',
 
   async execute(interaction, client) {
-    // Handle Button Interactions
     if (interaction.isButton()) {
       if (interaction.customId === "join_lotto") {
         const lottoPath = path.join(__dirname, "../data/lotto.json");
@@ -31,10 +30,9 @@ module.exports = {
           ephemeral: false
         });
       }
-      return; // Keluar jika bukan tombol yang relevan
+      return;
     }
 
-    // Handle Slash Command Interactions
     if (!interaction.isChatInputCommand()) return;
 
     const command = client.slashCommands.get(interaction.commandName);
