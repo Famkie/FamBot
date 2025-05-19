@@ -1,1 +1,4 @@
 # KieBot
+
+Features : 
+> Giveaway
