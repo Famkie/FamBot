@@ -3,7 +3,6 @@ const path = require('path');
 
 const filePath = path.resolve(__dirname, '../data/tornUsers.json');
 
-// Pastikan file json ada, kalau belum maka buat
 async function ensureFile() {
   try {
     await fs.access(filePath);
