@@ -1,9 +1,9 @@
 # KieBot
 
 ## Features : 
-> -Giveaway
-> -Lotto
-> -Linear
-> -Karma
-> -Mini Game
-> 
+> *Giveaway
+> *Lotto
+> *Linear
+> *Karma
+> *Mini Game
+
