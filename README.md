@@ -1,6 +1,6 @@
 # KieBot
 
-Features : 
+## Features : 
 > -Giveaway
 > -Lotto
 > -Linear
