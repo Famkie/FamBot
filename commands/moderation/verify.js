@@ -9,7 +9,7 @@ module.exports = {
   options: [
     {
       name: 'tornid',
-      type: 3, // STRING
+      type: 3,
       description: 'ID Torn City kamu',
       required: true,
     },
@@ -18,19 +18,16 @@ module.exports = {
     const discordId = interaction.user.id;
     const tornId = interaction.options.getString('tornid');
 
-    // Load existing users
     let users = [];
     if (fs.existsSync(tornUsersPath)) {
       users = JSON.parse(fs.readFileSync(tornUsersPath, 'utf8'));
     }
-
-    // Cek jika sudah pernah verif
+    
     const existing = users.find((u) => u.discordId === discordId);
     if (existing) {
       return interaction.reply({ content: 'Kamu sudah terverifikasi!', ephemeral: true });
     }
 
-    // Tambahkan ke file
     users.push({ discordId, tornId });
     fs.writeFileSync(tornUsersPath, JSON.stringify(users, null, 2));
 
