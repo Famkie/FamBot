@@ -10,8 +10,6 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply();
-
-    // Cek apakah user verified di server resmi Torn City
     const verified = await isVerifiedTC(interaction.client, interaction.user.id);
 
     if (!verified) {
@@ -21,7 +19,6 @@ module.exports = {
       });
     }
 
-    // Ambil data API key dari penyimpanan lokal (opsional jika kamu tetap pakai key)
     const user = getTornUser(interaction.user.id);
     if (!user) {
       return interaction.editReply('Tidak ditemukan API key untuk akun ini.');
