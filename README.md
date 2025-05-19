@@ -1,4 +1,4 @@
 # KieBot
 
 Features : 
-> Giveaway
+> -Giveaway
