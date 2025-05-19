@@ -1,4 +1,3 @@
-// commands/lotto/linfo.js
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const lottoStore = require('../../utils/lottoStore');
 const fs = require('fs');
