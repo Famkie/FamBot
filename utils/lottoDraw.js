@@ -1,4 +1,3 @@
-// utils/lottoDraw.js
 
 const { getEntries, clearCurrentLotto, getCurrentLotto, addStat } = require('./lottoStore');
 
@@ -11,7 +10,7 @@ function drawLotto() {
   const winnerIndex = Math.floor(Math.random() * entries.length);
   const winner = entries[winnerIndex];
 
-  addStat(winner.id); // menambahkan statistik untuk leaderboard
+  addStat(winner.id);
 
   const result = {
     prize: lotto.prize,
@@ -21,7 +20,7 @@ function drawLotto() {
     total: entries.length
   };
 
-  clearCurrentLotto(); // reset setelah draw
+  clearCurrentLotto(); 
 
   return result;
 }
