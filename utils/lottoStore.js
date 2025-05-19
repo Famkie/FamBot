@@ -1,4 +1,3 @@
-// utils/lottoStore.js
 
 let currentLotto = null;
 let lottoEntries = [];
