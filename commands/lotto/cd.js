@@ -1,4 +1,3 @@
-// commands/lotto/cd.js
 const { SlashCommandBuilder } = require('discord.js');
 const lottoStore = require('../../utils/lottoStore');
 const { drawWinners } = require('../../utils/lottoDraw');
