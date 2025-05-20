@@ -1,30 +1,39 @@
 import { lottoManager } from '../../utils/lottoManager.js';
 
-export async function executePrefixCommand(message, args = []) {
-  const user = message.author;
-  const member = message.member;
+const name = 'joinlotto';
+const aliases = ['jl', 'join', 'jlotto'];
 
-  const lotto = lottoManager.getLotto(message.guild.id);
+async function execute(ctx, client, args = []) {
+  const user = ctx.author;
+  const member = ctx.member;
+
+  const lotto = lottoManager.getLotto(ctx.guild.id);
   if (!lotto) {
-    return message.reply('No active lotto found.');
+    return ctx.reply('No active lotto found.');
   }
 
   lotto.entries = lotto.entries || [];
 
   if (lotto.entries.includes(user.id)) {
-    return message.reply('You already joined this lotto!');
+    return ctx.reply('You already joined this lotto!');
   }
 
   if (lotto.faction && !member.roles.cache.some(role => role.name.toLowerCase().includes('faction'))) {
-    return message.reply('This lotto is faction-only!');
+    return ctx.reply('This lotto is faction-only!');
   }
 
   if (lotto.karma && user.bot) {
-    return message.reply('Bots can’t join a karma lotto.');
+    return ctx.reply('Bots can’t join a karma lotto.');
   }
 
   lotto.entries.push(user.id);
 
   const prizeFormatted = lotto.prize.toLocaleString('id-ID');
-  return message.reply(`You're in! Good luck for the ${prizeFormatted} lotto!`);
+  return ctx.reply(`You're in! Good luck for the ${prizeFormatted} lotto!`);
 }
+
+export default {
+  name,
+  aliases,
+  execute,
+};
