@@ -1,17 +1,41 @@
-import { lottoStatsManager } from '../../utils/lottoStatsManager.js';
+import { SlashCommandBuilder } from 'discord.js';
+import { lottoManager } from '../../utils/lottoManager.js';
 
-export async function executeSlashCommand(interaction) {
+export const data = new SlashCommandBuilder()
+  .setName('joinkarmalotto')
+  .setDescription('Join the current lotto via Karma (jika mode karma aktif).');
+
+async function execute(interaction) {
   const guildId = interaction.guild.id;
-  const leaderboard = lottoStatsManager.getLeaderboard(guildId);
+  const userId = interaction.user.id;
 
-  if (!leaderboard || leaderboard.length === 0) {
-    return interaction.reply({ content: 'No data available for leaderboard.', ephemeral: true });
+  const lotto = lottoManager.getLotto(guildId);
+
+  if (!lotto) {
+    return interaction.reply({ content: '❌ Tidak ada lotto aktif.', ephemeral: true });
   }
 
-  let reply = '**Lotto Leaderboard**\n';
-  leaderboard.slice(0, 10).forEach((entry, idx) => {
-    reply += `\`${idx + 1}.\` <@${entry.userId}> - Wins: **${entry.wins}**, Entries: **${entry.entries}**\n`;
-  });
+  if (!lotto.karma) {
+    return interaction.reply({ content: '⚠️ Lotto ini tidak mengaktifkan mode Karma.', ephemeral: true });
+  }
 
-  return interaction.reply(reply);
+  lotto.entries = lotto.entries || [];
+
+  if (lotto.entries.includes(userId)) {
+    return interaction.reply({ content: '❌ Kamu sudah bergabung dalam lotto ini.', ephemeral: true });
+  }
+
+  if (interaction.user.bot) {
+    return interaction.reply({ content: '❌ Bot tidak bisa join lotto.', ephemeral: true });
+  }
+
+  lotto.entries.push(userId);
+  return interaction.reply({ content: '✅ Kamu telah bergabung ke lotto melalui Karma!' });
 }
+
+export default {
+  data,
+  name: 'joinkarmalotto',
+  aliases: ['joinkarma', 'jkarma', 'jkl'],
+  execute,
+};
