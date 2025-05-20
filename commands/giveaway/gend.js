@@ -1,6 +1,7 @@
+// commands/gend.js
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
-const command = {
+export default {
   data: new SlashCommandBuilder()
     .setName('gend')
     .setDescription('Akhiri giveaway dan pilih pemenang')
@@ -31,6 +32,7 @@ const command = {
 
       const users = await reaction.users.fetch();
       const entries = users.filter(user => !user.bot);
+
       if (entries.size === 0) {
         return interaction.reply({
           content: 'Tidak ada peserta pada giveaway tersebut.',
@@ -61,5 +63,3 @@ const command = {
     }
   }
 };
-
-export default command;
