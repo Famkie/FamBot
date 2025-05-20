@@ -18,6 +18,7 @@ export const lottoManager = {
       message,
       entries: [],
       createdAt: Date.now(),
+      winnerId: null, // penting untuk hindari double draw
     });
 
     return { success: true };
@@ -44,9 +45,16 @@ export const lottoManager = {
 
   drawWinner(guildId) {
     const lotto = this.getLotto(guildId);
-    if (!lotto || lotto.entries.length === 0) return { success: false, message: 'No participants to draw from.' };
+    if (!lotto) return { success: false, message: 'No active lotto.' };
+    if (lotto.entries.length === 0) return { success: false, message: 'No participants to draw from.' };
+
+    if (lotto.winnerId) {
+      return { success: false, message: 'Winner already drawn.', winnerId: lotto.winnerId };
+    }
 
     const winnerId = lotto.entries[Math.floor(Math.random() * lotto.entries.length)];
+    lotto.winnerId = winnerId;
+
     return { success: true, winnerId };
   },
 };
