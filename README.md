@@ -26,4 +26,4 @@ KieBot was developed as an all-in-one bot foundation for Discord, with the goal 
 ## Local Installation 
 1. **Clone repository:**
    ``` bash git clone
-https://github.com/Famkie/KieBot.git cd kiebot
+   https://github.com/Famkie/KieBot.git cd kiebot
