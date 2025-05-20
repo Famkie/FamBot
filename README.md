@@ -1,13 +1,39 @@
-# KieBot
-KieBot adalah bot Discord modular yang dibangun khusus untuk komunitas Torn City. Dirancang agar scalable dan mudah dikembangkan, KieBot mendukung **command hybrid** (awalan `!` dan garis miring `/`), serta terintegrasi langsung dengan **Torn City API**. Fitur utamanya mencakup sistem undian (Lotto) yang lengkap, perintah kontrol ID pemain, logging interaktif, serta sistem izin yang fleksibel. Dengan arsitektur berbasis folder yang terstruktur dan dukungan penuh ESM, KieBot siap menjadi fondasi bot all-in-one sekelas MEE6 atau CarlBot — tapi khusus untuk dunia Torn. Proyek ini masih dalam tahap pengembangan aktif dan terus dikembangkan dengan fitur-fitur baru yang relevan untuk komunitas game dan Discord modern.
+# KieBot — Discord Bot untuk Torn City
 
-## Features :
-- [x] Hybrid command (! dan /)
-- [x] Integrasi Torn City API
-- [x] Command Lotto lengkap
-- [x] Sistem permission & logging
-- [x] Auto deploy slash command
-- [x] Modular folder structure
+KieBot adalah bot Discord yang dikembangkan secara modular dengan fokus utama pada integrasi penuh dengan game **Torn City**. Bot ini mendukung sistem **command hybrid** (prefix `!` dan slash `/`) untuk fleksibilitas penggunaan, serta memanfaatkan **Torn City API** untuk menyediakan data yang relevan langsung ke Discord.
+
+Dengan fitur seperti sistem undian (Lotto) yang komprehensif, pengelolaan ID pemain, logging otomatis, dan kontrol permission yang terstruktur, KieBot dirancang untuk memenuhi kebutuhan komunitas yang dinamis dan berkembang. Arsitekturnya dibangun menggunakan **ESM (ECMAScript Module)** dan struktur folder profesional yang memudahkan pengembangan jangka panjang.
+
+KieBot dikembangkan sebagai fondasi bot all-in-one untuk Discord, dengan tujuan menjadi solusi bot publik yang kuat dan dapat diandalkan, khususnya bagi komunitas pemain Torn City.
+
+---
+
+## Fitur
+
+- [x] Command hybrid (`!` dan `/`)
+- [x] Integrasi penuh Torn City API
+- [x] Sistem Lotto lengkap (start, join, draw, leaderboard, dll)
+- [x] Auto-register slash command (deploy otomatis)
+- [x] Sistem logger & error handler
+- [x] Struktur folder modular dan profesional
+- [x] Full support Node.js 23 ESM mode
+
+---
+
+## Demo
+
+> (Tambahkan screenshot atau GIF keren nanti ya, contohnya:)
+> ![Demo Lotto](./assets/demo-lotto.gif)
+
+---
+
+## Instalasi Lokal
+
+1. **Clone repositori:**
+
+```bash
+git clone https://github.com/kamu/kiebot.git
+cd kiebot
 
 > [!Note]
 > This Bot is still under development.
