@@ -1,155 +1,156 @@
-# KieBot - Lotto Command Module
+commands/lotto/ - KieBot Lotto Command Suite
 
-This module contains all commands related to running and managing lotteries (lottos) in your Discord server, fully integrated with Torn City gameplay.
+This folder contains all commands related to the Lotto system in KieBot.
+Lotto is one of KieBot’s core features, allowing users to host interactive prize draws on Discord with hybrid command support (both prefix ! and slash /).
 
-## Slash Command Format
-
-`/startlotto prize:<prize> base:<ping|noping|quick> [added:true|false] [karma:true|false]`
-
-**Note:**
-- `<required>` parameters are mandatory.
-- `[optional]` parameters are optional.
 
 ---
 
-## Command List
+Key Features
 
-### Start a Lotto
-**Slash:** `/startlotto prize:<prize> base:<ping|noping|quick> [added:true] [karma:true]`  
-**Prefix:** `!sl <prize>`  
-Starts a lotto. Default type is `ping`.
+Hybrid commands (! and /) for maximum flexibility
 
-**Aliases:** `sl`, `startlotto`
+Supports various lotto modes: Ping, No Ping, Quick, Karma, Additive, Faction Only
 
----
+Karma system rewarding positive participation
 
-### Start a Lotto - No Ping
-**Slash:** `/startlotto prize:<prize> base:noping`  
-**Prefix:** `!slnp <prize> [message]`  
-Starts a lotto without pinging users.
+Torn API integration for auto send line
 
-**Aliases:** `slnp`, `npsl`, `startlottonoping`
+Full leaderboard and stats tracking (karma, minigame, total lotto)
+
+Full host control: edit prize, countdowns, auto draw, and more
+
+
 
 ---
 
-### Start a Lotto - Karma
-**Slash:** `/startlotto prize:<prize> base:<ping|noping> karma:true`  
-**Prefix:** `!slk <prize>`  
-Starts a karma-based lotto where users can buy extra entries.
+Command Structure and Descriptions
 
-**Aliases:** `slk`, `ksl`, `startlottokarma`
+1. Start a Lotto
 
----
+Command: !sl, /startlotto
 
-### Start a Lotto - Additive
-**Slash:** `/startlotto prize:<prize> base:<ping|noping> added:true`  
-**Prefix:** `!sla <prize>`  
-Each entry increases the total prize by the base amount.
+Required Params: prize:<prize>, base:<ping|noping|quick>
 
-**Aliases:** `sla`, `asl`, `startlottoadded`, `slanp`, `anpsl`, `startlottoaddednoping`
+Optional Flags:
 
----
+added:true → Additive Lotto (prize increases with entries)
 
-### Start a Lotto - Karma & Additive
-**Slash:** `/startlotto prize:<prize> base:<ping|noping> added:true karma:true`  
-**Prefix:** `!slak <prize>`  
-Combines karma and additive mechanics.
+karma:true → Karma Lotto (users can buy extra entries)
 
-**Aliases:** `slak`, `slka`, `startlottoaddedkarma`
+faction:true → Faction-only Lotto
 
----
 
-### Start a Lotto - Quick Mode
-**Slash:** `/startlotto prize:<prize> base:quick`  
-**Prefix:** `!slq <prize>`  
-Starts a 20-second quick lotto.
 
-**Aliases:** `slq`, `qsl`, `startlottoquick`
+Examples:
+
+/startlotto prize:500k base:ping karma:true added:true
+!sl 500k
+
 
 ---
 
-### Start a Lotto - Faction Only
-**Slash:** `/startlotto prize:<prize> base:<ping|noping> faction:true`  
-**Prefix:** `!slf <prize>`  
-Faction-only lotto. Only available to members in the same faction.
+2. Special Lotto Variants
 
-**Aliases:** `slf`, `fsl`, `startlottofaction`
+Variant	Alias	Description
 
----
+No Ping	!slnp	Lotto without ping
+Karma	!slk	Lotto with karma system
+Additive	!sla	Prize increases per entry
+Karma + Additive	!slak	Combination of karma & additive
+Quick	!slq	Fast lotto (20 seconds, no ping)
+Faction Only	!slf	Restricted to faction members only
 
-## Utility Commands
 
-- `!rl` / `/replay` â€” Replays the last lotto.  
-- `!j` / `/join` â€” Joins an active lotto.  
-- `!buy [number]` / `/buy` â€” Buy extra entries for karma lotto.  
-- `!multiprize [number]` / `/multiprize` â€” Enable multi prize lotto.  
-- `!editprize <prize>` / `/editprize` â€” Edit the current lotto's prize.  
-- `!manualsend` â€” Disable auto send line.  
-- `!lastcall` / `/lastcall` â€” Ping members during lotto (once per lotto).  
-- `!autodraw <time>` / `/autodraw` â€” Set timer to auto draw.  
-- `!autocd <entry count>` â€” Auto draw after a number of entries.  
-- `!cd` â€” Countdown 15s then draw winner.  
-- `!draw` / `/draw` â€” Instantly draw a winner.  
-- `!gg` â€” Congratulate the winner and gain karma.  
-- `!ty` â€” Thank the lotto runner.  
-- `!unlock` â€” Manually unlock lotto.  
-- `!minilock` â€” Prevent others from running minigames during a lotto.  
-- `!total [@user]` â€” Show lotto and karma stats.  
-- `!karma [@user]` â€” Check available karma.  
-- `!lastlotto` â€” Show the last lotto winner.  
-- `!chk` / `/check` â€” View active lotto details.  
 
 ---
 
-## Leaderboards
+3. Participation & Control
 
-- `!top [karma|minigame|lotto]` â€” Show top 5 leaderboard.
-- `!topten [karma|minigame|lotto]` â€” Show top 10 leaderboard.
+Function	Command	Description
 
----
+Join Lotto	!j, /join	Join an active lotto
+Buy Extra Entry	!buy	Buy extra entries in Karma Lotto
+Replay Lotto	!rl, /replay	Replay the previous lotto
+Multi-prize Setting	!multiprize	Set number of send lines
+Edit Prize	!editprize	Change prize during active lotto
+Manual Send Line	!manualsend	Disable Torn API auto-send
+Last Call Reminder	!lastcall	Ping participants as reminder
+Auto Draw	!autodraw	Schedule automatic draw
+Auto CD by Entry	!autocd	Auto draw once enough entries exist
+Countdown to Draw	!cd	15-second countdown before drawing
+Draw Now	!draw	Draw the winner immediately
+GG (Congratulate)	!gg	Congratulate winner and give karma
+Thank the Runner	!ty	Thank lotto host from the winner
+Unlock Lotto	!unlock	Re-open a locked lotto
+Lock Minigames	!minilock	Prevent others from starting minigames
 
-## Opt-in/Opt-out Commands
 
-- `!pingoptin` / `!pingoptout` â€” Manage lotto ping notifications.
-- `!karmaoptin` / `!karmaoptout` â€” Enable or disable karma gain.
-
----
-
-## Torn API Integration
-
-- `/api` â€” Register Torn API key.
-- `/api remove` â€” Remove Torn API key.
-- `/api info` â€” Show API system info.
-- `!api` â€” Show API usage and data.
-
----
-
-## Notes
-
-- Prefix and Slash commands are interchangeable.
-- Some commands have different behaviors depending on options.
-- Only designated lotto runners can execute some actions.
 
 ---
 
-## Folder Structure
+4. Stats & Leaderboard
 
-```
-commands/
-â””â”€â”€ lotto/
-    â”œâ”€â”€ start.js
-    â”œâ”€â”€ join.js
-    â”œâ”€â”€ draw.js
-    â”œâ”€â”€ replay.js
-    â”œâ”€â”€ multiprize.js
-    â”œâ”€â”€ editprize.js
-    â”œâ”€â”€ totals.js
-    â”œâ”€â”€ leaderboard.js
-    â””â”€â”€ ...
-```
+Function	Command	Description
 
-This module powers one of the core features of KieBot â€” server-based lottos tied to Torn City's community dynamics.
+Check Lotto Status	!chk, /check	View current lotto details
+Lotto Total Info	!total	Total prize and karma generated
+Karma Info	!karma	Check a user’s karma points
+Last Winner Info	!lastlotto	See the most recent lotto winner
+Top 5 Leaderboard	!top	View Top 5 leaderboard
+Top 10 Leaderboard	!topten	View Top 10 leaderboard
+
+
 
 ---
 
-For any questions or feature requests, contact the devs or check the KieBot documentation.
+5. User Preferences (Opt In / Out)
+
+Function	Command	Description
+
+Ping Opt-In	!pingoptin	Enable ping when lotto starts
+Ping Opt-Out	!pingoptout	Disable lotto pings
+Karma Opt-In	!karmaoptin	Enable Karma participation
+Karma Opt-Out	!karmaoptout	Disable Karma features
+
+
+
+---
+
+6. Torn API Integration
+
+Function	Command	Description
+
+Add API Key	/api	Add Torn API key for auto send line
+Remove API Key	/api remove	Remove Torn API key
+API Info	/api info	Show current API key status
+API Usage	!api	View usage statistics of Torn API
+
+
+
+---
+
+Quick Usage Examples
+
+!sl 1m                 # Basic ping lotto
+!slk 500k             # Karma lotto
+/startlotto prize:2m base:noping karma:true
+!sla 250k             # Additive lotto
+!buy 3                # Buy 3 extra entries
+!draw                 # Draw winner now
+!top                  # View leaderboard
+
+
+---
+
+Developer Notes
+
+Each command is split into its own file for modularity
+
+Commands are auto-registered via a handler
+
+Slash commands are auto-deployed when bot starts
+
+.env file is used to store tokens and API keys securely
+
+
