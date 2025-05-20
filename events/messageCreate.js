@@ -1,6 +1,8 @@
-const prefix = '!';
+import config from '../config/config.js';
 
-module.exports = {
+const prefix = config.prefix || '!';
+
+export default {
   name: 'messageCreate',
 
   async execute(message, client) {
@@ -13,6 +15,8 @@ module.exports = {
       ? commandName
       : client.aliases.get(commandName);
 
+    if (!actualCommandName) return;
+
     const command = client.commands.get(actualCommandName);
 
     if (!command) return;
@@ -21,7 +25,7 @@ module.exports = {
       await command.execute(message, args, client);
     } catch (error) {
       console.error(error);
-      message.reply('Terjadi error saat menjalankan command.');
+      await message.reply('Terjadi error saat menjalankan command.');
     }
   }
 };
