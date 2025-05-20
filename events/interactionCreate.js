@@ -1,23 +1,27 @@
-const fs = require("fs");
-const path = require("path");
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   name: 'interactionCreate',
 
   async execute(interaction, client) {
     if (interaction.isButton()) {
-      if (interaction.customId === "join_lotto") {
-        const lottoPath = path.join(__dirname, "../data/lotto.json");
+      if (interaction.customId === 'join_lotto') {
+        const lottoPath = path.join(__dirname, '../data/lotto.json');
         if (!fs.existsSync(lottoPath)) return;
 
         const lottoData = JSON.parse(fs.readFileSync(lottoPath));
         if (!lottoData.host || !lottoData.prize) {
-          return interaction.reply({ content: "Tidak ada lotto aktif!", ephemeral: true });
+          return interaction.reply({ content: 'Tidak ada lotto aktif!', ephemeral: true });
         }
 
         const alreadyJoined = lottoData.entries.find(e => e.user === interaction.user.id);
         if (alreadyJoined) {
-          return interaction.reply({ content: "Kamu sudah ikut!", ephemeral: true });
+          return interaction.reply({ content: 'Kamu sudah ikut!', ephemeral: true });
         }
 
         const entryNumber = lottoData.entries.length + 1;
