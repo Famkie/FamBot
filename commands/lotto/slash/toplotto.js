@@ -1,6 +1,22 @@
-import { EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { lottoStatsManager } from '../../utils/lottoStatsManager.js';
 import { lottoLeaderboard } from '../../utils/lottoLeaderboard.js';
+
+export const data = new SlashCommandBuilder()
+  .setName('lottotop')
+  .setDescription('Menampilkan 5 besar pemenang lotto atau karma.')
+  .addStringOption(opt =>
+    opt.setName('type')
+      .setDescription('Tipe leaderboard: lotto | karma')
+      .addChoices(
+        { name: 'Lotto', value: 'lotto' },
+        { name: 'Karma', value: 'karma' }
+      )
+  );
+
+async function execute(interaction, args = [], isSlash = false) {
+  return executeSlashCommand(interaction, interaction.client);
+}
 
 export async function executeSlashCommand(interaction, client) {
   const type = interaction.options.getString('type') || 'lotto';
@@ -44,3 +60,10 @@ export async function executeSlashCommand(interaction, client) {
 
   await interaction.reply({ embeds: [embed] });
 }
+
+export default {
+  data,
+  name: 'lottotop',
+  aliases: ['ltop', 'toplotto', 'topkarma'],
+  execute,
+};
