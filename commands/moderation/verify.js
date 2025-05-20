@@ -1,9 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// __dirname tidak tersedia di ESM, jadi buat manual
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const tornUsersPath = path.join(__dirname, '..', 'data', 'tornUsers.json');
 
-module.exports = {
+export default {
   name: 'verify',
   description: 'Verifikasi akun Torn City kamu',
   options: [
@@ -22,7 +27,7 @@ module.exports = {
     if (fs.existsSync(tornUsersPath)) {
       users = JSON.parse(fs.readFileSync(tornUsersPath, 'utf8'));
     }
-    
+
     const existing = users.find((u) => u.discordId === discordId);
     if (existing) {
       return interaction.reply({ content: 'Kamu sudah terverifikasi!', ephemeral: true });
