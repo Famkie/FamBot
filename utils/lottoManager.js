@@ -1,3 +1,5 @@
+import { lottoStatsManager } from './lottoStatsManager.js';
+
 export const lottoManager = {
   activeLottos: new Map(),
 
@@ -18,7 +20,7 @@ export const lottoManager = {
       message,
       entries: [],
       createdAt: Date.now(),
-      winnerId: null, // penting untuk hindari double draw
+      winnerId: null,
     });
 
     return { success: true };
@@ -34,6 +36,8 @@ export const lottoManager = {
     if (lotto.entries.includes(userId)) return { success: false, message: 'You already joined.' };
 
     lotto.entries.push(userId);
+    lottoStatsManager.recordEntry(guildId, userId);  // <-- Update stats here
+
     return { success: true, message: 'Successfully joined.' };
   },
 
@@ -45,15 +49,13 @@ export const lottoManager = {
 
   drawWinner(guildId) {
     const lotto = this.getLotto(guildId);
-    if (!lotto) return { success: false, message: 'No active lotto.' };
-    if (lotto.entries.length === 0) return { success: false, message: 'No participants to draw from.' };
-
-    if (lotto.winnerId) {
-      return { success: false, message: 'Winner already drawn.', winnerId: lotto.winnerId };
-    }
+    if (!lotto || lotto.entries.length === 0) return { success: false, message: 'No participants to draw from.' };
+    if (lotto.winnerId) return { success: false, message: 'Winner already drawn.' };
 
     const winnerId = lotto.entries[Math.floor(Math.random() * lotto.entries.length)];
     lotto.winnerId = winnerId;
+
+    lottoStatsManager.recordWin(guildId, winnerId);  // <-- Update stats here
 
     return { success: true, winnerId };
   },
