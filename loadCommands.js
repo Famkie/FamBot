@@ -22,26 +22,28 @@ export async function loadCommands(client, commandsDir) {
       try {
         const commandModule = await import(pathToFileURL(filePath).href);
 
-        const command = commandModule.command || commandModule.default || {};
+        // Ambil prefix command, slash command data dan slash execute
+        const prefixCommand = commandModule.command;
         const slashData = commandModule.data;
+        const slashExecute = commandModule.slash;
 
-        const isPrefixCommand = typeof command.execute === 'function';
-        const isSlashCommand = slashData && typeof commandModule.slash === 'function';
+        const isPrefixCommand = prefixCommand && typeof prefixCommand.execute === 'function';
+        const isSlashCommand = slashData && typeof slashExecute === 'function';
 
-        if (isPrefixCommand && command.name) {
-          client.commands.set(command.name, command);
-          if (Array.isArray(command.aliases)) {
-            for (const alias of command.aliases) {
-              client.aliases.set(alias, command.name);
+        if (isPrefixCommand) {
+          client.commands.set(prefixCommand.name, prefixCommand);
+          if (Array.isArray(prefixCommand.aliases)) {
+            for (const alias of prefixCommand.aliases) {
+              client.aliases.set(alias, prefixCommand.name);
             }
           }
-          console.log(chalk.green(`[PREFIX] Loaded: ${command.name}`));
+          console.log(chalk.green(`[PREFIX] Loaded: ${prefixCommand.name}`));
         }
 
         if (isSlashCommand) {
           client.slashCommands.set(slashData.name, {
             data: slashData,
-            execute: commandModule.slash
+            execute: slashExecute
           });
           console.log(chalk.cyan(`[SLASH] Loaded: ${slashData.name}`));
         }
