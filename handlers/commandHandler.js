@@ -3,6 +3,7 @@ import path from 'path';
 import { Collection } from 'discord.js';
 import chalk from 'chalk';
 import { pathToFileURL } from 'url';
+import config from '../config/config.js';
 
 export async function loadCommands(client, commandsDir) {
   client.commands = new Collection();
@@ -21,7 +22,6 @@ export async function loadCommands(client, commandsDir) {
       try {
         const filePath = path.join(folderPath, file);
         const commandModule = await import(pathToFileURL(filePath).href);
-
         const command = commandModule.command || commandModule.default || {};
         const slashData = commandModule.data;
 
@@ -55,17 +55,17 @@ export async function loadCommands(client, commandsDir) {
 
 export async function deploySlashCommands(clientId, guildId, client, token) {
   const slashCommands = [...client.slashCommands.values()].map(cmd => cmd.data.toJSON());
-
   const { REST } = await import('@discordjs/rest');
-  const { Routes } = await import('discord-api-types/v9');
+  const { Routes } = await import('discord-api-types/v10');
 
-  const rest = new REST({ version: '9' }).setToken(token);
+  const rest = new REST({ version: '10' }).setToken(token);
 
   try {
     console.log(chalk.blue('[INFO] Deploying slash commands...'));
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-      body: slashCommands,
-    });
+    await rest.put(
+      Routes.applicationGuildCommands(clientId, guildId),
+      { body: slashCommands }
+    );
     console.log(chalk.green('[INFO] Slash commands deployed successfully!'));
   } catch (error) {
     console.error(chalk.red('[ERROR] Slash command deployment failed:'), error);
@@ -90,7 +90,8 @@ export async function handleInteraction(interaction, client) {
   }
 }
 
-export async function handleMessage(message, client, prefix = '!') {
+export async function handleMessage(message, client) {
+  const prefix = config.prefix || '!';
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
   const args = message.content.slice(prefix.length).trim().split(/\s+/);
@@ -106,7 +107,7 @@ export async function handleMessage(message, client, prefix = '!') {
   if (!command) return;
 
   try {
-    await command.execute(message, args);
+    await command.execute(message, args, client);
   } catch (error) {
     console.error(chalk.red(`[ERROR] Prefix command failed: ${cmdName}`), error);
     message.reply('Terjadi error saat mengeksekusi command.');
