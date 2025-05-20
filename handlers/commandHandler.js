@@ -6,8 +6,8 @@ import { pathToFileURL } from 'url';
 
 export async function loadCommands(client, commandsDir) {
   client.commands = new Collection();
+  client.slashCommands = new Collection();
   client.aliases = new Collection();
-  client.slashCommands = [];
 
   const commandFolders = fs.readdirSync(commandsDir);
 
@@ -17,47 +17,45 @@ export async function loadCommands(client, commandsDir) {
 
     const commandFiles = fs.readdirSync(folderPath).filter(f => f.endsWith('.js'));
 
-    const mergedCommand = {};
-
     for (const file of commandFiles) {
-      const filePath = path.join(folderPath, file);
-      const commandModule = await import(pathToFileURL(filePath).href);
+      try {
+        const filePath = path.join(folderPath, file);
+        const commandModule = await import(pathToFileURL(filePath).href);
 
-      if (file.includes('_prefix')) {
-        Object.assign(mergedCommand, commandModule.command);
-      } else if (file.includes('_slash')) {
-        if (commandModule.command) mergedCommand.slash = commandModule.command.slash;
-        if (commandModule.data) mergedCommand.data = commandModule.data;
-      } else {
-        // fallback for merged or general file like `top.js`
-        Object.assign(mergedCommand, commandModule.command || commandModule.default);
-        if (commandModule.data) mergedCommand.data = commandModule.data;
+        const command = commandModule.command || commandModule.default || {};
+        const slashData = commandModule.data;
+
+        const isPrefixCommand = typeof command.execute === 'function';
+        const isSlashCommand = slashData && typeof command.slash === 'function';
+
+        if (isPrefixCommand) {
+          client.commands.set(command.name, command);
+          if (Array.isArray(command.aliases)) {
+            for (const alias of command.aliases) {
+              client.aliases.set(alias, command.name);
+            }
+          }
+          console.log(chalk.green(`[PREFIX] Loaded: ${command.name}`));
+        }
+
+        if (isSlashCommand) {
+          client.slashCommands.set(slashData.name, { data: slashData, execute: command.slash });
+          console.log(chalk.cyan(`[SLASH] Loaded: ${slashData.name}`));
+        }
+
+        if (!isPrefixCommand && !isSlashCommand) {
+          console.warn(chalk.yellow(`[WARN] Skipped invalid command file: ${file}`));
+        }
+      } catch (error) {
+        console.error(chalk.red(`[ERROR] Failed to load command ${file}:`), error);
       }
     }
-
-    if (!mergedCommand.name || (!mergedCommand.execute && !mergedCommand.slash)) {
-      console.warn(chalk.yellow(`[WARN] Invalid command in folder: ${folder}`));
-      continue;
-    }
-
-    // Register command
-    client.commands.set(mergedCommand.name, mergedCommand);
-
-    if (Array.isArray(mergedCommand.aliases)) {
-      for (const alias of mergedCommand.aliases) {
-        client.aliases.set(alias, mergedCommand.name);
-      }
-    }
-
-    if (mergedCommand.data) {
-      client.slashCommands.push(mergedCommand.data.toJSON?.() || mergedCommand.data);
-    }
-
-    console.log(chalk.green(`[INFO] Loaded command: ${mergedCommand.name}`));
   }
 }
 
-export async function deploySlashCommands(clientId, guildId, slashCommands, token) {
+export async function deploySlashCommands(clientId, guildId, client, token) {
+  const slashCommands = [...client.slashCommands.values()].map(cmd => cmd.data.toJSON());
+
   const { REST } = await import('@discordjs/rest');
   const { Routes } = await import('discord-api-types/v9');
 
@@ -65,10 +63,9 @@ export async function deploySlashCommands(clientId, guildId, slashCommands, toke
 
   try {
     console.log(chalk.blue('[INFO] Deploying slash commands...'));
-    await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
-      { body: slashCommands }
-    );
+    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+      body: slashCommands,
+    });
     console.log(chalk.green('[INFO] Slash commands deployed successfully!'));
   } catch (error) {
     console.error(chalk.red('[ERROR] Slash command deployment failed:'), error);
@@ -78,24 +75,17 @@ export async function deploySlashCommands(clientId, guildId, slashCommands, toke
 export async function handleInteraction(interaction, client) {
   if (!interaction.isCommand()) return;
 
-  const command = client.commands.get(interaction.commandName);
-  if (!command) return;
+  const cmd = client.slashCommands.get(interaction.commandName);
+  if (!cmd) return;
 
   try {
-    if (typeof command.slash === 'function') {
-      await command.slash(interaction, client);
-    } else if (typeof command.execute === 'function') {
-      await command.execute(interaction, client);
-    } else {
-      throw new Error('No valid slash handler found.');
-    }
+    await cmd.execute(interaction);
   } catch (error) {
-    console.error(chalk.red(`[ERROR] Failed to execute /${interaction.commandName}:`), error);
-    const replyPayload = { content: 'Terjadi error saat mengeksekusi command.', ephemeral: true };
+    console.error(chalk.red(`[ERROR] Slash command failed: ${interaction.commandName}`), error);
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(replyPayload);
+      await interaction.followUp({ content: 'Terjadi error saat mengeksekusi command.', ephemeral: true });
     } else {
-      await interaction.reply(replyPayload);
+      await interaction.reply({ content: 'Terjadi error saat mengeksekusi command.', ephemeral: true });
     }
   }
 }
@@ -113,12 +103,12 @@ export async function handleMessage(message, client, prefix = '!') {
   if (!cmdName) return;
 
   const command = client.commands.get(cmdName);
-  if (!command || typeof command.execute !== 'function') return;
+  if (!command) return;
 
   try {
-    await command.execute(message, client, args);
+    await command.execute(message, args);
   } catch (error) {
-    console.error(chalk.red(`[ERROR] Failed to execute !${cmdName}:`), error);
+    console.error(chalk.red(`[ERROR] Prefix command failed: ${cmdName}`), error);
     message.reply('Terjadi error saat mengeksekusi command.');
   }
 }
