@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { lottoStatsManager } from '../../utils/lottoStatsManager.js'; // nanti buat file ini
+import { lottoStatsManager } from '../../utils/lottoStatsManager.js';
 
 export const data = new SlashCommandBuilder()
   .setName('leaderboard')
