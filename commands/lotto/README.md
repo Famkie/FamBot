@@ -1,109 +1,155 @@
-# `commands/lotto/` - KieBot Lotto Command Suite
+# KieBot - Lotto Command Module
 
-**Folder ini berisi semua command yang berkaitan dengan sistem lotre (lotto) di KieBot.**  
-Lotto adalah salah satu fitur utama KieBot yang memungkinkan pengguna mengadakan undian berhadiah secara interaktif di Discord, dengan dukungan command hybrid (prefix `!` dan slash `/`).
+This module contains all commands related to running and managing lotteries (lottos) in your Discord server, fully integrated with Torn City gameplay.
 
-## Fitur Utama
+## Slash Command Format
 
-- Hybrid command (`!` dan `/`) untuk fleksibilitas tinggi
-- Dukungan berbagai mode lotre: Ping, No Ping, Quick, Karma, Additive, Faction Only
-- Sistem Karma yang memberi penghargaan pada partisipasi positif
-- Kompatibel dengan Torn API untuk integrasi send line otomatis
-- Sistem leaderboard dan statistik lengkap (karma, minigame, total lotto)
-- Kontrol penuh untuk host: edit hadiah, countdown, auto draw, dan lainnya
+`/startlotto prize:<prize> base:<ping|noping|quick> [added:true|false] [karma:true|false]`
 
-## Struktur dan Penjelasan Command
+**Note:**
+- `<required>` parameters are mandatory.
+- `[optional]` parameters are optional.
 
-### 1. Start a Lotto
+---
 
-- **Command**: `!sl`, `/startlotto`
-- **Parameter Wajib**: `prize:<prize>`, `base:<ping|noping|quick>`
-- **Opsi Tambahan**:
-  - `added:true` â†’ Lotto Additive (prize bertambah per entry)
-  - `karma:true` â†’ Lotto Karma (bisa beli entry tambahan)
-  - `faction:true` â†’ Lotto khusus anggota faksi
+## Command List
 
-**Contoh**:
+### Start a Lotto
+**Slash:** `/startlotto prize:<prize> base:<ping|noping|quick> [added:true] [karma:true]`  
+**Prefix:** `!sl <prize>`  
+Starts a lotto. Default type is `ping`.
+
+**Aliases:** `sl`, `startlotto`
+
+---
+
+### Start a Lotto - No Ping
+**Slash:** `/startlotto prize:<prize> base:noping`  
+**Prefix:** `!slnp <prize> [message]`  
+Starts a lotto without pinging users.
+
+**Aliases:** `slnp`, `npsl`, `startlottonoping`
+
+---
+
+### Start a Lotto - Karma
+**Slash:** `/startlotto prize:<prize> base:<ping|noping> karma:true`  
+**Prefix:** `!slk <prize>`  
+Starts a karma-based lotto where users can buy extra entries.
+
+**Aliases:** `slk`, `ksl`, `startlottokarma`
+
+---
+
+### Start a Lotto - Additive
+**Slash:** `/startlotto prize:<prize> base:<ping|noping> added:true`  
+**Prefix:** `!sla <prize>`  
+Each entry increases the total prize by the base amount.
+
+**Aliases:** `sla`, `asl`, `startlottoadded`, `slanp`, `anpsl`, `startlottoaddednoping`
+
+---
+
+### Start a Lotto - Karma & Additive
+**Slash:** `/startlotto prize:<prize> base:<ping|noping> added:true karma:true`  
+**Prefix:** `!slak <prize>`  
+Combines karma and additive mechanics.
+
+**Aliases:** `slak`, `slka`, `startlottoaddedkarma`
+
+---
+
+### Start a Lotto - Quick Mode
+**Slash:** `/startlotto prize:<prize> base:quick`  
+**Prefix:** `!slq <prize>`  
+Starts a 20-second quick lotto.
+
+**Aliases:** `slq`, `qsl`, `startlottoquick`
+
+---
+
+### Start a Lotto - Faction Only
+**Slash:** `/startlotto prize:<prize> base:<ping|noping> faction:true`  
+**Prefix:** `!slf <prize>`  
+Faction-only lotto. Only available to members in the same faction.
+
+**Aliases:** `slf`, `fsl`, `startlottofaction`
+
+---
+
+## Utility Commands
+
+- `!rl` / `/replay` â€” Replays the last lotto.  
+- `!j` / `/join` â€” Joins an active lotto.  
+- `!buy [number]` / `/buy` â€” Buy extra entries for karma lotto.  
+- `!multiprize [number]` / `/multiprize` â€” Enable multi prize lotto.  
+- `!editprize <prize>` / `/editprize` â€” Edit the current lotto's prize.  
+- `!manualsend` â€” Disable auto send line.  
+- `!lastcall` / `/lastcall` â€” Ping members during lotto (once per lotto).  
+- `!autodraw <time>` / `/autodraw` â€” Set timer to auto draw.  
+- `!autocd <entry count>` â€” Auto draw after a number of entries.  
+- `!cd` â€” Countdown 15s then draw winner.  
+- `!draw` / `/draw` â€” Instantly draw a winner.  
+- `!gg` â€” Congratulate the winner and gain karma.  
+- `!ty` â€” Thank the lotto runner.  
+- `!unlock` â€” Manually unlock lotto.  
+- `!minilock` â€” Prevent others from running minigames during a lotto.  
+- `!total [@user]` â€” Show lotto and karma stats.  
+- `!karma [@user]` â€” Check available karma.  
+- `!lastlotto` â€” Show the last lotto winner.  
+- `!chk` / `/check` â€” View active lotto details.  
+
+---
+
+## Leaderboards
+
+- `!top [karma|minigame|lotto]` â€” Show top 5 leaderboard.
+- `!topten [karma|minigame|lotto]` â€” Show top 10 leaderboard.
+
+---
+
+## Opt-in/Opt-out Commands
+
+- `!pingoptin` / `!pingoptout` â€” Manage lotto ping notifications.
+- `!karmaoptin` / `!karmaoptout` â€” Enable or disable karma gain.
+
+---
+
+## Torn API Integration
+
+- `/api` â€” Register Torn API key.
+- `/api remove` â€” Remove Torn API key.
+- `/api info` â€” Show API system info.
+- `!api` â€” Show API usage and data.
+
+---
+
+## Notes
+
+- Prefix and Slash commands are interchangeable.
+- Some commands have different behaviors depending on options.
+- Only designated lotto runners can execute some actions.
+
+---
+
+## Folder Structure
+
 ```
-/startlotto prize:500k base:ping karma:true added:true
-!sl 500k
+commands/
+â””â”€â”€ lotto/
+    â”œâ”€â”€ start.js
+    â”œâ”€â”€ join.js
+    â”œâ”€â”€ draw.js
+    â”œâ”€â”€ replay.js
+    â”œâ”€â”€ multiprize.js
+    â”œâ”€â”€ editprize.js
+    â”œâ”€â”€ totals.js
+    â”œâ”€â”€ leaderboard.js
+    â””â”€â”€ ...
 ```
 
-### 2. Lotto Varian Khusus
+This module powers one of the core features of KieBot â€” server-based lottos tied to Torn City's community dynamics.
 
-| Varian           | Alias         | Keterangan                           |
-|------------------|---------------|--------------------------------------|
-| No Ping          | `!slnp`       | Lotto tanpa ping                     |
-| Karma            | `!slk`        | Lotto dengan sistem karma            |
-| Additive         | `!sla`        | Prize bertambah tiap entry           |
-| Karma + Additive | `!slak`       | Kombinasi karma & additive           |
-| Quick            | `!slq`        | Lotto cepat (20 detik) tanpa ping    |
-| Faction Only     | `!slf`        | Lotto khusus anggota faction         |
+---
 
-### 3. Partisipasi & Kontrol
-
-| Fungsi              | Command       | Keterangan                           |
-|---------------------|---------------|--------------------------------------|
-| Join Lotto          | `!j`, `/join` | Bergabung dengan lotto               |
-| Buy Entry (Karma)   | `!buy`        | Beli entry tambahan di lotto karma   |
-| Replay Lotto        | `!rl`, `/replay` | Jalankan ulang lotto sebelumnya  |
-| Multiprize          | `!multiprize` | Tentukan jumlah send line            |
-| Edit Prize          | `!editprize`  | Ubah prize selama lotto berlangsung  |
-| Manual Send Line    | `!manualsend` | Matikan auto send line dari API      |
-| Last Call           | `!lastcall`   | Reminder ping peserta                |
-| Auto Draw           | `!autodraw`   | Atur waktu draw otomatis             |
-| Auto CD by Entry    | `!autocd`     | Draw otomatis saat cukup peserta     |
-| Countdown           | `!cd`         | Countdown 15 detik lalu draw         |
-| Draw Now            | `!draw`       | Draw sekarang juga                   |
-| GG (Congratulate)   | `!gg`         | Memberi selamat dan memberi karma    |
-| Thank Runner        | `!ty`         | Ucapan terima kasih dari pemenang    |
-| Unlock Lotto        | `!unlock`     | Membuka kembali lotto terkunci       |
-| Lock Minigame       | `!minilock`   | Cegah user lain menjalankan minigame |
-
-### 4. Statistik & Leaderboard
-
-| Fungsi             | Command       | Deskripsi                            |
-|--------------------|---------------|--------------------------------------|
-| Cek Status Lotto   | `!chk`, `/check` | Info detail lotto berjalan        |
-| Lotto Total        | `!total`      | Total prize dan karma                |
-| Karma Info         | `!karma`      | Lihat karma user                     |
-| Last Winner        | `!lastlotto`  | Lihat pemenang terakhir              |
-| Top 5 Leaderboard  | `!top`        | Top 5 leaderboard                    |
-| Top 10 Leaderboard | `!topten`     | Sama seperti `!top` tapi 10 besar    |
-
-### 5. Preferensi User (Opt In / Out)
-
-| Fungsi           | Command          | Penjelasan                           |
-|------------------|------------------|--------------------------------------|
-| Ping Opt In      | `!pingoptin`     | Aktifkan ping saat lotto dimulai     |
-| Ping Opt Out     | `!pingoptout`    | Nonaktifkan ping                     |
-| Karma Opt In     | `!karmaoptin`    | Aktifkan fitur karma                 |
-| Karma Opt Out    | `!karmaoptout`   | Nonaktifkan fitur karma              |
-
-### 6. Torn API Integration
-
-| Fungsi            | Command       | Keterangan                           |
-|-------------------|---------------|--------------------------------------|
-| Tambah API        | `/api`        | Tambah API key untuk auto send line  |
-| Hapus API         | `/api remove` | Hapus API key                        |
-| Info API          | `/api info`   | Info sistem API                      |
-| Penggunaan API    | `!api`        | Statistik penggunaan API             |
-
-## Contoh Penggunaan Cepat
-
-```
-!sl 1m                 # Lotto ping biasa
-!slk 500k             # Lotto karma
-/startlotto prize:2m base:noping karma:true
-!sla 250k             # Lotto additive
-!buy 3                # Beli 3 entry tambahan
-!draw                 # Draw pemenang sekarang
-!top                  # Lihat leaderboard
-```
-
-## Catatan Developer
-
-- Semua command berada di file terpisah per fungsi
-- Handler otomatis mendaftarkan command
-- Slash command auto deploy saat bot dijalankan
-- Menggunakan .env untuk menyimpan token dan API key
+For any questions or feature requests, contact the devs or check the KieBot documentation.
