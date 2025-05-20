@@ -7,6 +7,7 @@ import { pathToFileURL } from 'url';
 export async function loadCommands(client, commandsDir) {
   client.commands = new Collection();
   client.aliases = new Collection();
+  client.slashCommands = [];
 
   const commandFolders = fs.readdirSync(commandsDir);
 
@@ -16,52 +17,62 @@ export async function loadCommands(client, commandsDir) {
 
     const commandFiles = fs.readdirSync(folderPath).filter(f => f.endsWith('.js'));
 
+    const mergedCommand = {};
+
     for (const file of commandFiles) {
-      try {
-        const filePath = path.join(folderPath, file);
-        const commandModule = await import(pathToFileURL(filePath).href);
-        const command = commandModule.default;
+      const filePath = path.join(folderPath, file);
+      const commandModule = await import(pathToFileURL(filePath).href);
 
-        if (!command || !command.name || !command.execute) {
-          console.warn(chalk.yellow(`[WARN] Invalid command in file: ${file}`));
-          continue;
-        }
-
-        // Simpan command utama
-        client.commands.set(command.name, command);
-
-        // Simpan alias jika ada
-        if (Array.isArray(command.aliases)) {
-          for (const alias of command.aliases) {
-            client.aliases.set(alias, command.name);
-          }
-        }
-
-        console.log(chalk.green(`[INFO] Loaded command: ${command.name}`));
-      } catch (error) {
-        console.error(chalk.red(`[ERROR] Failed to load command ${file}:`), error);
+      if (file.includes('_prefix')) {
+        Object.assign(mergedCommand, commandModule.command);
+      } else if (file.includes('_slash')) {
+        if (commandModule.command) mergedCommand.slash = commandModule.command.slash;
+        if (commandModule.data) mergedCommand.data = commandModule.data;
+      } else {
+        // fallback for merged or general file like `top.js`
+        Object.assign(mergedCommand, commandModule.command || commandModule.default);
+        if (commandModule.data) mergedCommand.data = commandModule.data;
       }
     }
+
+    if (!mergedCommand.name || (!mergedCommand.execute && !mergedCommand.slash)) {
+      console.warn(chalk.yellow(`[WARN] Invalid command in folder: ${folder}`));
+      continue;
+    }
+
+    // Register command
+    client.commands.set(mergedCommand.name, mergedCommand);
+
+    if (Array.isArray(mergedCommand.aliases)) {
+      for (const alias of mergedCommand.aliases) {
+        client.aliases.set(alias, mergedCommand.name);
+      }
+    }
+
+    if (mergedCommand.data) {
+      client.slashCommands.push(mergedCommand.data.toJSON?.() || mergedCommand.data);
+    }
+
+    console.log(chalk.green(`[INFO] Loaded command: ${mergedCommand.name}`));
   }
 }
 
 export async function deploySlashCommands(clientId, guildId, slashCommands, token) {
-  import('@discordjs/rest').then(({ REST }) => {
-    import('discord-api-types/v9').then(async ({ Routes }) => {
-      const rest = new REST({ version: '9' }).setToken(token);
+  const { REST } = await import('@discordjs/rest');
+  const { Routes } = await import('discord-api-types/v9');
 
-      try {
-        console.log(chalk.blue('[INFO] Deploying slash commands...'));
-        await rest.put(
-          Routes.applicationGuildCommands(clientId, guildId),
-          { body: slashCommands }
-        );
-        console.log(chalk.green('[INFO] Slash commands deployed successfully!'));
-      } catch (error) {
-        console.error(chalk.red('[ERROR] Slash command deployment failed:'), error);
-      }
-    });
-  });
+  const rest = new REST({ version: '9' }).setToken(token);
+
+  try {
+    console.log(chalk.blue('[INFO] Deploying slash commands...'));
+    await rest.put(
+      Routes.applicationGuildCommands(clientId, guildId),
+      { body: slashCommands }
+    );
+    console.log(chalk.green('[INFO] Slash commands deployed successfully!'));
+  } catch (error) {
+    console.error(chalk.red('[ERROR] Slash command deployment failed:'), error);
+  }
 }
 
 export async function handleInteraction(interaction, client) {
@@ -71,13 +82,20 @@ export async function handleInteraction(interaction, client) {
   if (!command) return;
 
   try {
-    await command.execute(interaction, client);
+    if (typeof command.slash === 'function') {
+      await command.slash(interaction, client);
+    } else if (typeof command.execute === 'function') {
+      await command.execute(interaction, client);
+    } else {
+      throw new Error('No valid slash handler found.');
+    }
   } catch (error) {
     console.error(chalk.red(`[ERROR] Failed to execute /${interaction.commandName}:`), error);
+    const replyPayload = { content: 'Terjadi error saat mengeksekusi command.', ephemeral: true };
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: 'Terjadi error saat mengeksekusi command.', ephemeral: true });
+      await interaction.followUp(replyPayload);
     } else {
-      await interaction.reply({ content: 'Terjadi error saat mengeksekusi command.', ephemeral: true });
+      await interaction.reply(replyPayload);
     }
   }
 }
@@ -88,15 +106,14 @@ export async function handleMessage(message, client, prefix = '!') {
   const args = message.content.slice(prefix.length).trim().split(/\s+/);
   const commandName = args.shift().toLowerCase();
 
-  // cari command dari nama atau alias
-  const cmdName = client.commands.has(commandName) 
-    ? commandName 
+  const cmdName = client.commands.has(commandName)
+    ? commandName
     : client.aliases.get(commandName);
 
   if (!cmdName) return;
 
   const command = client.commands.get(cmdName);
-  if (!command) return;
+  if (!command || typeof command.execute !== 'function') return;
 
   try {
     await command.execute(message, client, args);
