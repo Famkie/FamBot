@@ -19,12 +19,10 @@ KieBot was developed as an all-in-one bot foundation for Discord, with the goal 
 --- 
 
 ## Demo 
-> (Add cool screenshots or GIFs later, for example :)
 > ![Lotto Demo](./assets/demo-lotto.gif)
 
 --- 
 
 ## Local Installation 
 1. **Clone repository:**
-   
-``` bash git clone https://github.com/kamu/kiebot.git cd kiebot
+   ``` bash git clone https://github.com/kamu/kiebot.git cd kiebot
