@@ -36,16 +36,25 @@ const aliases = ['sl', 'slnp', 'slk', 'sla', 'slq', 'slak', 'slf', 'ksl', 'asl',
 async function execute(interaction, args, isSlash = false) {
   const user = isSlash ? interaction.user : interaction.author;
 
-  let prize = isSlash ? interaction.options.getString('prize') : args[0];
-  let base = isSlash ? interaction.options.getString('base') : args[1] || 'ping';
-  const added = isSlash ? interaction.options.getBoolean('added') : args.includes('added:true');
-  const karma = isSlash ? interaction.options.getBoolean('karma') : args.includes('karma:true');
-  const faction = isSlash ? interaction.options.getBoolean('faction') : args.includes('faction:true');
-  const message = isSlash ? interaction.options.getString('message') : args.slice(2).join(' ');
+  // Cek jika interaction.options tidak tersedia
+  if (isSlash && !interaction.options) {
+    console.error('interaction.options tidak tersedia saat menggunakan Slash Command.');
+    return interaction.reply({ content: 'Terjadi kesalahan: interaction options tidak ditemukan.', ephemeral: true });
+  }
+
+  // Gunakan optional chaining dan fallback
+  let prize = isSlash ? interaction.options?.getString('prize') : args[0];
+  let base = isSlash ? interaction.options?.getString('base') : args[1] || 'ping';
+  const added = isSlash ? interaction.options?.getBoolean('added') : args.includes('added:true');
+  const karma = isSlash ? interaction.options?.getBoolean('karma') : args.includes('karma:true');
+  const faction = isSlash ? interaction.options?.getBoolean('faction') : args.includes('faction:true');
+  const message = isSlash ? interaction.options?.getString('message') : args.slice(2).join(' ');
 
   if (!isValidPrize(prize)) {
-    const reply = 'Invalid prize. Example: 500k or 1m';
-    return isSlash ? interaction.reply({ content: reply, ephemeral: true }) : interaction.reply(reply);
+    const reply = 'Hadiah tidak valid. Contoh: 500k atau 1m';
+    return isSlash
+      ? interaction.reply({ content: reply, ephemeral: true })
+      : interaction.reply(reply);
   }
 
   const parsedPrize = parsePrize(prize);
@@ -54,8 +63,8 @@ async function execute(interaction, args, isSlash = false) {
   const result = await lottoManager.startLotto(interaction.guild, config);
 
   const reply = result.success
-    ? `Lotto started: ${parsedPrize} | Base: ${base} | Added: ${added ? 'Yes' : 'No'} | Karma: ${karma ? 'Yes' : 'No'}`
-    : `Failed to start lotto: ${result.message}`;
+    ? `Lotto dimulai: ${parsedPrize} | Base: ${base} | Added: ${added ? 'Ya' : 'Tidak'} | Karma: ${karma ? 'Ya' : 'Tidak'}`
+    : `Gagal memulai lotto: ${result.message}`;
 
   return isSlash ? interaction.reply(reply) : interaction.reply(reply);
 }
