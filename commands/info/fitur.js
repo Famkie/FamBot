@@ -38,7 +38,7 @@ module.exports = {
         { name: '🧠 Modular Handler', value: 'Command & event terpisah dan rapih.' },
         { name: '☁️ Hosting Ready', value: 'Siap untuk Replit, Cybrancee, dan VPS.' }
       )
-      .setFooter({ text: 'Bot by Kamu' });
+      .setFooter({ text: 'Bot by Enma [3604249]' });
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   }
