@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { lottoManager } from '../../lib/lottoManager.js';
+import { lottoManager } from '../../utils/lottoManager.js';
 
 export const data = new SlashCommandBuilder()
   .setName('karma')
