@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function fetchTornData(endpoint = 'user', selections = 'basic', apiKey) {
   const url = `https://api.torn.com/${endpoint}/?selections=${selections}&key=${apiKey}`;
@@ -6,4 +6,4 @@ async function fetchTornData(endpoint = 'user', selections = 'basic', apiKey) {
   return await res.json();
 }
 
-module.exports = fetchTornData;
+export default fetchTornData;
