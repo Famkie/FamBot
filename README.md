@@ -9,12 +9,12 @@ KieBot was developed as an all-in-one bot foundation for Discord, with the goal 
 
 ## Features 
 - [x] Hybrid commands (`!` and `/`)
-- [x] Full Torn City API integration
+- [ ] Full Torn City API integration
 - [x] Complete Lotto system (start, join, draw, leaderboard, etc)
-- [x] Auto-register slash commands (auto-deploy)
-- [x] System logger & error handler
-- [x] Modular and professional folder structure
-- [x] Full Node.js 23 ESM mode support
+- [ ] Auto-register slash commands (auto-deploy)
+- [ ] System logger & error handler
+- [ ] Modular and professional folder structure
+- [ ] Full Node.js 23 ESM mode support
 
 --- 
 
