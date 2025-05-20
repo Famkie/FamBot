@@ -1,4 +1,4 @@
-# `commands/lotto/` - KieBot Lotto Command Suite
+# 'KieBot Lotto Command Suiteʼ
 
 **This folder contains all commands related to the Lotto system in KieBot.**  
 Lotto is one of KieBot's core features, enabling interactive prize giveaways on Discord with hybrid command support (both prefix `!` and slash `/`).
