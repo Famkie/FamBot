@@ -2,9 +2,12 @@ import { EmbedBuilder } from 'discord.js';
 import { lottoStatsManager } from '../../utils/lottoStatsManager.js';
 import { lottoLeaderboard } from '../../utils/lottoLeaderboard.js';
 
-export async function executePrefixCommand(message, client, args) {
-  const type = args[0]?.toLowerCase() === 'karma' ? 'karma' : 'lotto';
+const aliases = ['ltop', 'toplotto', 'topkarma'];
+
+async function execute(message, args = []) {
+  const type = (args[0] || 'lotto').toLowerCase();
   const guildId = message.guild.id;
+  const client = message.client;
 
   const embed = new EmbedBuilder()
     .setTitle(`Top 5 ${type === 'karma' ? 'Karma' : 'Lotto Winners'}`)
@@ -13,7 +16,7 @@ export async function executePrefixCommand(message, client, args) {
   if (type === 'karma') {
     const karmaMap = lottoStatsManager.getKarma(guildId);
     if (!karmaMap || karmaMap.size === 0) {
-      embed.setDescription('No karma data found.');
+      embed.setDescription('Tidak ada data karma.');
     } else {
       const sorted = [...karmaMap.entries()]
         .sort((a, b) => b[1] - a[1])
@@ -30,7 +33,7 @@ export async function executePrefixCommand(message, client, args) {
   } else {
     const winners = lottoLeaderboard.getTopWinners(guildId, 5);
     if (!winners.length) {
-      embed.setDescription('No lotto winner data found.');
+      embed.setDescription('Tidak ada data pemenang lotto.');
     } else {
       let description = '';
       for (let i = 0; i < winners.length; i++) {
@@ -42,5 +45,11 @@ export async function executePrefixCommand(message, client, args) {
     }
   }
 
-  await message.channel.send({ embeds: [embed] });
+  return message.reply({ embeds: [embed] });
 }
+
+export default {
+  name: 'lottotop',
+  aliases,
+  execute,
+};
