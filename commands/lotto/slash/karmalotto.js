@@ -1,15 +1,35 @@
+import { SlashCommandBuilder } from 'discord.js';
 import { lottoManager } from '../../utils/lottoManager.js';
 
-export async function executeSlashCommand(interaction) {
+export const data = new SlashCommandBuilder()
+  .setName('joinkarmalotto')
+  .setDescription('Join the current lotto via Karma (jika mode karma aktif).');
+
+async function execute(interaction) {
   const guildId = interaction.guild.id;
   const userId = interaction.user.id;
 
   const lotto = lottoManager.getLotto(guildId);
 
-  if (!lotto) return interaction.reply({ content: 'No active lotto.', ephemeral: true });
-  if (!lotto.karma) return interaction.reply({ content: 'Karma entry is not enabled for this lotto.', ephemeral: true });
-  if (lotto.entries.includes(userId)) return interaction.reply({ content: 'You already joined this lotto.', ephemeral: true });
+  if (!lotto) {
+    return interaction.reply({ content: '❌ Tidak ada lotto aktif.', ephemeral: true });
+  }
+
+  if (!lotto.karma) {
+    return interaction.reply({ content: '⚠️ Lotto ini tidak mengaktifkan mode Karma.', ephemeral: true });
+  }
+
+  if (lotto.entries.includes(userId)) {
+    return interaction.reply({ content: '❌ Kamu sudah bergabung dalam lotto ini.', ephemeral: true });
+  }
 
   lotto.entries.push(userId);
-  return interaction.reply({ content: 'You have joined the lotto via Karma!' });
+  return interaction.reply({ content: '✅ Kamu telah bergabung ke lotto melalui Karma!' });
 }
+
+export default {
+  data,
+  name: 'joinkarmalotto',
+  aliases: ['joinkarma', 'jkarma', 'jkl'],
+  execute,
+};
