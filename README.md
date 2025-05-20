@@ -19,7 +19,7 @@ KieBot was developed as an all-in-one bot foundation for Discord, with the goal 
 --- 
 
 ## Demo 
-> ![Lotto Demo](./assets/demo-lotto.gif)
+>![Lotto Demo](./assets/demo-lotto.gif)
 
 --- 
 
