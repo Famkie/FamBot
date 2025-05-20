@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'warn',
   description: 'Berikan peringatan ke member.',
   async execute(message, args) {
