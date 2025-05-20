@@ -1,4 +1,4 @@
-module.exports = async function isVerifiedTC(client, userId) {
+export default async function isVerifiedTC(client, userId) {
   const guild = await client.guilds.fetch(process.env.TORN_GUILD_ID);
   if (!guild) return false;
 
@@ -8,4 +8,4 @@ module.exports = async function isVerifiedTC(client, userId) {
   } catch (err) {
     return false;
   }
-};
+}
