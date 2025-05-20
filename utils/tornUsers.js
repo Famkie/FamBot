@@ -1,5 +1,9 @@
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const filePath = path.resolve(__dirname, '../data/tornUsers.json');
 
@@ -7,11 +11,11 @@ async function ensureFile() {
   try {
     await fs.access(filePath);
   } catch {
-    await fs.writeFile(filePath, JSON.stringify({ }, null, 2));
+    await fs.writeFile(filePath, JSON.stringify({}, null, 2));
   }
 }
 
-async function getTornUser(userId) {
+export async function getTornUser(userId) {
   await ensureFile();
 
   const data = await fs.readFile(filePath, 'utf-8');
@@ -19,7 +23,7 @@ async function getTornUser(userId) {
   return users[userId] || null;
 }
 
-async function setTornUser(userId, key) {
+export async function setTornUser(userId, key) {
   await ensureFile();
 
   const data = await fs.readFile(filePath, 'utf-8');
@@ -28,8 +32,3 @@ async function setTornUser(userId, key) {
   users[userId] = { key };
   await fs.writeFile(filePath, JSON.stringify(users, null, 2));
 }
-
-module.exports = {
-  getTornUser,
-  setTornUser
-};
