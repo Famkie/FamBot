@@ -7,8 +7,8 @@ import {
 import { lottoManager } from '../../utils/lottoManager.js';
 import { isValidPrize, parsePrize } from '../../utils/validators.js';
 
-export async function executePrefixCommand(ctx, args = []) {
-  const user = ctx.author;
+async function execute(message, args = []) {
+  const user = message.author;
   const prize = args[0];
   const base = args[1] || 'ping';
   const flags = args.slice(2).join(' ');
@@ -16,18 +16,18 @@ export async function executePrefixCommand(ctx, args = []) {
   const added = flags.includes('added:true');
   const karma = flags.includes('karma:true');
   const faction = flags.includes('faction:true');
-  const message = flags.replace(/(\w+:true)/g, '').trim();
+  const messageText = flags.replace(/(\w+:true)/g, '').trim();
 
   if (!isValidPrize(prize)) {
-    return ctx.reply('Hadiah tidak valid. Contoh: 500k atau 1m');
+    return message.reply('Hadiah tidak valid. Contoh: 500k atau 1m');
   }
 
   const parsedPrize = parsePrize(prize);
-  const config = { user, prize: parsedPrize, base, added, karma, faction, message };
-  const result = await lottoManager.startLotto(ctx.guild, config);
+  const config = { user, prize: parsedPrize, base, added, karma, faction, message: messageText };
+  const result = await lottoManager.startLotto(message.guild, config);
 
   if (!result.success) {
-    return ctx.reply(`Gagal memulai undian: ${result.message}`);
+    return message.reply(`Gagal memulai undian: ${result.message}`);
   }
 
   const embed = new EmbedBuilder()
@@ -44,5 +44,12 @@ export async function executePrefixCommand(ctx, args = []) {
       .setStyle(ButtonStyle.Success)
   );
 
-  return ctx.reply({ embeds: [embed], components: [row] });
-    }
+  return message.reply({ embeds: [embed], components: [row] });
+}
+
+export const command = {
+  name: 'lotto',
+  aliases: ['lottery', 'startlotto'],
+  description: 'Mulai undian baru (prefix only)',
+  execute,
+};
