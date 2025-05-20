@@ -1,21 +1,11 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { executePrefixCommand } from './joinlotto_prefix.js';
+import { lottoManager } from '../../utils/lottoManager.js';
 
 export const data = new SlashCommandBuilder()
   .setName('joinlotto')
   .setDescription('Join the currently active lotto.');
 
-const aliases = ['join', 'jl', 'jlk', 'jla', 'jlf', 'jlkf'];
-
-async function execute(interaction, args = [], isSlash = false) {
-  if (isSlash || interaction.isChatInputCommand?.()) {
-    return executeSlashCommand(interaction);
-  } else {
-    return executePrefixCommand(interaction, args);
-  }
-}
-
-async function executeSlashCommand(interaction) {
+async function execute(interaction) {
   const user = interaction.user;
   const member = interaction.member;
 
@@ -47,6 +37,5 @@ async function executeSlashCommand(interaction) {
 export default {
   data,
   name: 'joinlotto',
-  aliases,
   execute,
 };
