@@ -1,39 +1,68 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js'); const lottoStore = require('../../utils/lottoStore'); const { getTornUser } = require('../../utils/tornUsers'); const fetchTornData = require('../../utils/fetchTorn');
+import { SlashCommandBuilder } from 'discord.js';
+import { lottoManager } from '../../utils/lottoManager.js';
+import { isValidPrize, parsePrize } from '../../utils/validators.js';
 
-module.exports = { data: new SlashCommandBuilder() .setName('sl') .setDescription('Start a new lotto'),
+const data = new SlashCommandBuilder()
+  .setName('startlotto')
+  .setDescription('Starts a new lottery with various options.')
+  .addStringOption(opt =>
+    opt.setName('prize')
+      .setDescription('Prize for the lotto (e.g., 500k, 1m)')
+      .setRequired(true))
+  .addStringOption(opt =>
+    opt.setName('base')
+      .setDescription('Base type: ping | noping | quick')
+      .setRequired(true)
+      .addChoices(
+        { name: 'ping', value: 'ping' },
+        { name: 'noping', value: 'noping' },
+        { name: 'quick', value: 'quick' }
+      ))
+  .addBooleanOption(opt =>
+    opt.setName('added')
+      .setDescription('Enable additive lotto'))
+  .addBooleanOption(opt =>
+    opt.setName('karma')
+      .setDescription('Enable karma lotto'))
+  .addBooleanOption(opt =>
+    opt.setName('faction')
+      .setDescription('Faction only lotto'))
+  .addStringOption(opt =>
+    opt.setName('message')
+      .setDescription('Optional lotto announcement message'));
 
-async execute(interaction) { await interaction.deferReply();
+const aliases = ['sl', 'slnp', 'slk', 'sla', 'slq', 'slak', 'slf', 'ksl', 'asl', 'slanp', 'qsl', 'fsl'];
 
-const tornUser = getTornUser(interaction.user.id);
-if (!tornUser) return interaction.editReply('Akun kamu belum terhubung dengan Torn City. Gunakan `/tcverify` terlebih dahulu.');
+async function execute(interaction, args, isSlash = false) {
+  const user = isSlash ? interaction.user : interaction.author;
 
-const profile = await fetchTornData('user', 'basic,profile', tornUser.key);
-if (profile.error) return interaction.editReply(`Gagal mengambil data Torn: ${profile.error}`);
+  let prize = isSlash ? interaction.options.getString('prize') : args[0];
+  let base = isSlash ? interaction.options.getString('base') : args[1] || 'ping';
+  const added = isSlash ? interaction.options.getBoolean('added') : args.includes('added:true');
+  const karma = isSlash ? interaction.options.getBoolean('karma') : args.includes('karma:true');
+  const faction = isSlash ? interaction.options.getBoolean('faction') : args.includes('faction:true');
+  const message = isSlash ? interaction.options.getString('message') : args.slice(2).join(' ');
 
-if (lottoStore.activeLotto) return interaction.editReply('Masih ada undian yang aktif. Selesaikan dulu.');
+  if (!isValidPrize(prize)) {
+    const reply = 'Invalid prize. Example: 500k or 1m';
+    return isSlash ? interaction.reply({ content: reply, ephemeral: true }) : interaction.reply(reply);
+  }
 
-const hostName = `${profile.name} [${profile.player_id}]`;
-const prize = 'cape tiap hari od';
+  const parsedPrize = parsePrize(prize);
+  const config = { user, prize: parsedPrize, base, added, karma, faction, message };
 
-lottoStore.activeLotto = {
-  host: hostName,
-  prize,
-  entries: []
+  const result = await lottoManager.startLotto(interaction.guild, config);
+
+  const reply = result.success
+    ? `Lotto started: ${parsedPrize} | Base: ${base} | Added: ${added ? 'Yes' : 'No'} | Karma: ${karma ? 'Yes' : 'No'}`
+    : `Failed to start lotto: ${result.message}`;
+
+  return isSlash ? interaction.reply(reply) : interaction.reply(reply);
+}
+
+export default {
+  data,
+  name: 'startlotto',
+  aliases,
+  execute,
 };
-
-const embed = new EmbedBuilder()
-  .setTitle(`🎉 ${hostName} has started a lotto! 🎉`)
-  .setDescription(`Use !j to enter for a chance to win ${prize}!`)
-  .setColor('Green');
-
-const joinButton = new ButtonBuilder()
-  .setCustomId('join_lotto')
-  .setLabel('Join')
-  .setStyle(ButtonStyle.Primary);
-
-const row = new ActionRowBuilder().addComponents(joinButton);
-
-await interaction.editReply({ content: `There is a lotto running <@&LottoHunter>!`, embeds: [embed], components: [row] });
-
-} };
-
