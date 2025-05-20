@@ -1,4 +1,10 @@
-import { SlashCommandBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} from 'discord.js';
 import { lottoManager } from '../../utils/lottoManager.js';
 import { isValidPrize, parsePrize } from '../../utils/validators.js';
 
@@ -6,9 +12,7 @@ const data = new SlashCommandBuilder()
   .setName('startlotto')
   .setDescription('Memulai undian baru dengan berbagai opsi.')
   .addStringOption(opt =>
-    opt.setName('prize')
-      .setDescription('Hadiah (contoh: 500k, 1m)')
-      .setRequired(true))
+    opt.setName('prize').setDescription('Hadiah (contoh: 500k, 1m)').setRequired(true))
   .addStringOption(opt =>
     opt.setName('base')
       .setDescription('Tipe dasar: ping | noping | quick')
@@ -18,18 +22,10 @@ const data = new SlashCommandBuilder()
         { name: 'noping', value: 'noping' },
         { name: 'quick', value: 'quick' }
       ))
-  .addBooleanOption(opt =>
-    opt.setName('added')
-      .setDescription('Aktifkan undian bertambah'))
-  .addBooleanOption(opt =>
-    opt.setName('karma')
-      .setDescription('Aktifkan undian karma'))
-  .addBooleanOption(opt =>
-    opt.setName('faction')
-      .setDescription('Hanya untuk faction'))
-  .addStringOption(opt =>
-    opt.setName('message')
-      .setDescription('Pesan pengumuman opsional'));
+  .addBooleanOption(opt => opt.setName('added').setDescription('Aktifkan undian bertambah'))
+  .addBooleanOption(opt => opt.setName('karma').setDescription('Aktifkan undian karma'))
+  .addBooleanOption(opt => opt.setName('faction').setDescription('Hanya untuk faction'))
+  .addStringOption(opt => opt.setName('message').setDescription('Pesan pengumuman opsional'));
 
 const aliases = ['sl', 'slnp', 'slk', 'sla', 'slq', 'slak', 'slf', 'ksl', 'asl', 'slanp', 'qsl', 'fsl'];
 
@@ -55,11 +51,27 @@ async function execute(ctx, client, args = []) {
   const config = { user, prize: parsedPrize, base, added, karma, faction, message };
   const result = await lottoManager.startLotto(ctx.guild, config);
 
-  const reply = result.success
-    ? `Undian dimulai: ${parsedPrize} | Base: ${base} | Added: ${added ? 'Ya' : 'Tidak'} | Karma: ${karma ? 'Ya' : 'Tidak'}`
-    : `Gagal memulai undian: ${result.message}`;
+  if (!result.success) {
+    return isSlash
+      ? ctx.reply({ content: `Gagal memulai undian: ${result.message}`, ephemeral: true })
+      : ctx.reply(`Gagal memulai undian: ${result.message}`);
+  }
 
-  return isSlash ? ctx.reply(reply) : ctx.reply(reply);
+  const embed = new EmbedBuilder()
+    .setTitle('Lotto Dimulai!')
+    .setDescription(`Hadiah: **${parsedPrize}**\nTipe: **${base}**\nTambah: **${added ? 'Ya' : 'Tidak'}**\nKarma: **${karma ? 'Ya' : 'Tidak'}**\nFaction Only: **${faction ? 'Ya' : 'Tidak'}**`)
+    .setColor(0x00AE86)
+    .setFooter({ text: `Dibuat oleh ${user.username}`, iconURL: user.displayAvatarURL() })
+    .setTimestamp();
+
+  const joinButton = new ButtonBuilder()
+    .setCustomId(`join_lotto`)
+    .setLabel('Join Lotto')
+    .setStyle(ButtonStyle.Success);
+
+  const row = new ActionRowBuilder().addComponents(joinButton);
+
+  return ctx.reply({ embeds: [embed], components: [row] });
 }
 
 export default {
