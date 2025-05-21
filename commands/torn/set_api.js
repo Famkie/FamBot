@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
 
-import {Id_api_functions} from "../helper_functions/id_api.js"
+import {Id_api_functions} from "../../helper_functions/id_api.js"
 
 let data = new SlashCommandBuilder()
 		.setName('set-api')
