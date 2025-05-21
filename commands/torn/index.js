@@ -3,7 +3,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-import {General_functions} from "../helper_functions/general.js"
+import {General_functions} from "../../helper_functions/general.js"
 
 let Commands = {
 
