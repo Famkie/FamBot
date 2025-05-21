@@ -1,4 +1,4 @@
-import {General_functions} from "./helper_functions/general.js"
+import {General_functions} from "./general.js"
 import {Components_functions} from './helper_functions/components.js'
 import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
 
