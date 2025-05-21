@@ -1,6 +1,6 @@
-import {Database} from "../database.js"
-import {Discord_functions} from '../helper_functions/discord.js'
-import {General_functions} from '../helper_functions/general.js'
+import {Database} from "../../database.js"
+import {Discord_functions} from '../../helper_functions/discord.js'
+import {General_functions} from '../../helper_functions/general.js'
 
 async function get_shared_api_key() {
 	let data = Database.getData()
