@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import config from './config/config.js';
-import { loadCommands, handleInteraction, handleMessage } from './handlers/commandHandler.js';
+import { loadCommands, handleInteraction, handleMessage } from './alerts/command_handlers/commandHandler.js';
 
 dotenv.config();
 
