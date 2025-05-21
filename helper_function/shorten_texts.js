@@ -1,4 +1,4 @@
-import {General_functions} from "../helper_functions/general.js"
+import {General_functions} from "./general.js"
 
 function shortenText(desc) {
 	desc = desc.replace(" hours ", " hrs ")
