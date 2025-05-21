@@ -1,12 +1,15 @@
-// Fungsi untuk menghitung jumlah karyawan dan nama direktur dari data perusahaan
+// helper_functions/company.js
+
 export async function employees_info(company) {
   let count = 0;
   let director = '';
 
   for (const id of Object.keys(company.employees)) {
-    count += 1;
+    count++;
+    const employee = company.employees[id];
+
     if (parseInt(id) === company.director) {
-      director = company.employees[id].name;
+      director = employee.name;
     }
   }
 
@@ -16,7 +19,6 @@ export async function employees_info(company) {
   };
 }
 
-// Kalau kamu ingin tetap punya ekspor terstruktur seperti sebelumnya:
 export const Company_functions = {
-  employees_info,
+  employees_info
 };
