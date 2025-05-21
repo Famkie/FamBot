@@ -1,21 +1,27 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+  StringSelectMenuBuilder
+} from 'discord.js';
 
-import {Message_constructors} from '../../message_constructors/index.js'
+import { Message_constructors } from '../../message_constructors/index.js';
 
-let data = new SlashCommandBuilder()
-		.setName('faction')
-		.setDescription('Shows profile of some faction')
-		.addIntegerOption(option =>
-		option.setName('faction_id')
-			.setDescription('The faction ID')
-			.setRequired(false))
+const data = new SlashCommandBuilder()
+  .setName('faction')
+  .setDescription('Shows profile of some faction')
+  .addIntegerOption(option =>
+    option.setName('faction_id')
+      .setDescription('The faction ID')
+      .setRequired(false)
+  );
 
 async function execute(interaction) {
-	let id = interaction.options.getInteger('faction_id');
-
-	return await interaction.reply( await Message_constructors.faction_profile(interaction = interaction, id=id) )
+  const id = interaction.options.getInteger('faction_id');
+  const response = await Message_constructors.faction_profile({ interaction, id });
+  return await interaction.reply(response);
 }
 
-export { data }
-export { execute }
+export { data, execute };
