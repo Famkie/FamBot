@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
-import { Id_api_functions } from '../helper_functions/id_api.js';
+import { Id_api_functions } from '../../helper_functions/id_api.js';
 
 export const data = new SlashCommandBuilder()
   .setName('share-api')
