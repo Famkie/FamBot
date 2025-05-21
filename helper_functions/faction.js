@@ -7,24 +7,33 @@ async function get_users_faction(interaction_from) {
 
 }
 */
-async function members_info(faction) {
-	let count = 0
-	let leader = ""
-	let coleader = ""
-	for (let i of Object.keys(faction["members"])) {
-		count += 1
-		if (parseInt(i) === faction["leader"]) {
-			leader = faction["members"][i]["name"]
-		}
-		if (parseInt(i) === faction["co-leader"]) {
-			coleader = faction["members"][i]["name"]
-		}
-	}
-	return {"members_count":count, "leader_name":leader, "coleader_name":coleader}
+// helper_functions/faction.js
+
+export async function members_info(faction) {
+  let count = 0;
+  let leader = '';
+  let coleader = '';
+
+  for (const id of Object.keys(faction.members)) {
+    count++;
+    const member = faction.members[id];
+
+    if (parseInt(id) === faction.leader) {
+      leader = member.name;
+    }
+
+    if (parseInt(id) === faction['co-leader']) {
+      coleader = member.name;
+    }
+  }
+
+  return {
+    members_count: count,
+    leader_name: leader,
+    coleader_name: coleader
+  };
 }
 
-const Faction_functions = {
-	members_info: members_info,
-}
-
-export { Faction_functions }
+export const Faction_functions = {
+  members_info
+};
