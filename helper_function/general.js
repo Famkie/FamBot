@@ -1,8 +1,8 @@
 import axios from 'axios';
 import fs from 'fs';
 
-import { Torn_data } from '.././torn/index.js'
-import { Database } from ".././database.js"
+import { Torn_data } from '../torn/index.js'
+import { Database } from "../database.js"
 
 function template(which) {
 	if (which === "user") {
