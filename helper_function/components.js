@@ -1,5 +1,5 @@
 import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
-import {General_functions} from "../helper_functions/general.js"
+import {General_functions} from "./helper_functions/general.js"
 
 async function button(interaction, button_id, button_label, button_style="PRIMARY", func) {
 	let random = General_functions.make_random_str(10)
