@@ -1,5 +1,5 @@
 import {Database} from "../database.js"
-import {General_functions} from "../../helper_functions/general.js"
+import {General_functions} from "../helper_functions/general.js"
 
 async function get_alert_by_code(code) {
 	let data = Database.getData()
