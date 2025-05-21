@@ -1,17 +1,13 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from 'discord.js';
+import { Id_api_functions } from '../helper_functions/id_api.js';
 
-import {Id_api_functions} from "../helper_functions/id_api.js"
+export const data = new SlashCommandBuilder()
+  .setName('share-api')
+  .setDescription('Shares or unshares your API key');
 
-let data = new SlashCommandBuilder()
-		.setName('share-api')
-		.setDescription('Shares or unshares your API key')
-
-async function execute(interaction) {
-	let interaction_from = interaction.user
-	let done = await Id_api_functions.share_users_key(interaction_from.id, "!")
-	return await interaction.reply( {content: done } )
+export async function execute(interaction) {
+  const interaction_from = interaction.user;
+  const done = await Id_api_functions.share_users_key(interaction_from.id, "!");
+  return interaction.reply({ content: done });
 }
-
-export { data }
-export { execute }
