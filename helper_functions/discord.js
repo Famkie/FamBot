@@ -1,4 +1,4 @@
-import { General_functions } from "./helper_functions/general.js"
+import { General_functions } from "./general.js"
 
 async function rename_user(user_id, guild_id, name) {
 	let client = General_functions.getClient()
